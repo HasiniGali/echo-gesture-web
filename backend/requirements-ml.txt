@@ -1,0 +1,5 @@
+-r requirements.txt
+# PyTorch is installed separately because wheel support varies by Python and platform.
+torch>=2.6
+scikit-learn>=1.5
+onnx>=1.16
