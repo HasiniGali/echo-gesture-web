@@ -434,6 +434,4 @@ The next stage is to improve accuracy, validate robustness, and optimize the sys
 
 ---
 
-## 📄 License
 
-Add the project's chosen license here before distributing the repository publicly.
