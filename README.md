@@ -1,117 +1,439 @@
-# EchoGesture
+# EchoGesture 🤟
+### Sign Language Prediction on Edge Devices
 
-EchoGesture is an accessibility-focused communication prototype for Indian Sign Language, speech and text.
+EchoGesture is a camera-based sign language recognition prototype designed to make communication more accessible. It uses computer vision to extract body and hand landmarks, processes gesture sequences through a machine learning model, and displays recognition results in a web interface.
 
-> Every gesture has a voice. Every voice deserves to be heard.
+**Hackathon Track:** Track 02 — Sign Language Prediction on Edge Devices
 
-## Architecture
+🌐 **Live Demo:** https://echo-gesture-web.vercel.app  
+💻 **GitHub Repository:** https://github.com/HasiniGali/echo-gesture-web
 
-- `src/`: React, TypeScript, Vite, eight routed screens, browser speech/camera controls and a typed API client.
-- `backend/app/`: FastAPI routers, Pydantic request validation, model/provider services and SQLite persistence.
-- `backend/app/training/`: read-only 77-class dataset validation, metric calculation and guarded training/export entry points.
-- Vite proxies `/api` to `http://127.0.0.1:8001` during development. The backend can also run independently.
+---
 
-## Windows Setup
+## 📌 Project Overview
 
-From PowerShell at the project root:
+Communication can be challenging when people do not share a common language or understand sign language.
 
-```powershell
+EchoGesture explores how computer vision and machine learning can help bridge this communication gap through real-time gesture recognition.
+
+The current project is a working web-based prototype that captures gestures using a camera, extracts landmarks, sends processed sequences to a recognition backend, and displays the model's prediction.
+
+Our goal is to develop a more accurate, efficient, and accessible sign recognition system that can eventually support edge-device deployment.
+
+---
+
+## ✨ Current Features
+
+The following features are implemented in the current prototype:
+
+- Live camera access through the browser
+- Body and hand landmark detection using MediaPipe
+- Gesture sequence collection using 60 frames
+- Landmark preprocessing and feature generation
+- Backend integration for model prediction
+- Recognition across 77 gesture classes
+- Confidence-based prediction handling
+- Rejection of predictions that do not meet the confidence threshold
+- Recognition status and error feedback
+- Confidence and API latency display
+- Deployed frontend and backend services
+
+---
+
+## 🏗️ System Architecture
+
+EchoGesture follows a frontend–backend machine learning architecture.
+
+```text
+          User Performs a Sign
+                   |
+                   v
+          Browser Camera
+                   |
+                   v
+       MediaPipe Landmark Detection
+          |                 |
+          v                 v
+       Pose Points      Hand Points
+          |                 |
+          +--------+--------+
+                   |
+                   v
+       Landmark Preprocessing
+                   |
+                   v
+        60-Frame Sequence
+                   |
+                   v
+          Feature Generation
+          60 x 258 Features
+                   |
+                   v
+          Recognition API
+                   |
+                   v
+        Machine Learning Model
+                   |
+                   v
+      Prediction + Confidence
+                   |
+                   v
+       Confidence Validation
+                   |
+                   v
+        Recognition Interface
+```
+
+### Technology Stack
+
+| Component | Technology |
+|---|---|
+| Frontend | React |
+| Language | TypeScript |
+| Build Tool | Vite |
+| Computer Vision | MediaPipe |
+| Backend | Python |
+| API Framework | FastAPI |
+| Machine Learning | PyTorch |
+| Model Format | ONNX |
+| Frontend Deployment | Vercel |
+| Backend Deployment | Render |
+
+---
+
+## 🧠 Machine Learning Pipeline
+
+The recognition pipeline processes a sequence of landmarks rather than directly classifying raw camera frames.
+
+### 1. Landmark Extraction
+
+MediaPipe is used to detect:
+
+- Body pose landmarks
+- Left-hand landmarks
+- Right-hand landmarks
+
+### 2. Sequence Collection
+
+The application collects a sequence of **60 frames** for gesture recognition.
+
+### 3. Preprocessing
+
+The detected landmarks are converted into the model-compatible feature representation.
+
+### 4. Model Input
+
+The model receives a sequence with the following shape:
+
+```text
+60 frames x 258 features
+```
+
+### 5. Prediction
+
+The backend processes the sequence and returns a prediction with confidence information.
+
+### 6. Confidence Handling
+
+Predictions below the configured confidence threshold are rejected rather than automatically displayed as reliable signs.
+
+This helps prevent uncertain predictions from being treated as confirmed recognition results.
+
+---
+
+## 📊 Model Evaluation
+
+The current model has been evaluated using the following metrics:
+
+| Metric | Result |
+|---|---:|
+| Top-1 Accuracy | 23.38% |
+| Top-3 Accuracy | 37.66% |
+| Macro F1 Score | 16.96% |
+| Number of Gesture Classes | 77 |
+| Model Input | 60 × 258 |
+
+### Interpretation
+
+The current results show that the model can perform gesture classification, but recognition accuracy remains a major limitation.
+
+Further improvements are required in:
+
+- Model training
+- Gesture representation
+- Generalization across users
+- Robustness under different lighting and camera conditions
+- Prediction quality
+
+These results are reported transparently and are not presented as production-level recognition accuracy.
+
+---
+
+## ⚡ Performance Benchmark
+
+A model-only CPU inference benchmark was conducted.
+
+| Measurement | Result |
+|---|---:|
+| Mean Inference Time | 1.529 ms |
+| Median Inference Time | 0.217 ms |
+| 95th Percentile | 0.702 ms |
+
+**Benchmark scope:** These measurements represent model-only CPU inference.
+
+They do not represent complete camera-to-prediction latency, browser-to-backend latency, or performance on a dedicated edge device.
+
+The live application also displays API request latency during recognition.
+
+---
+
+## 🔧 Model Optimization Progress
+
+The project has completed the following technical work:
+
+- PyTorch model inference pipeline
+- ONNX model export
+- Recognition API integration
+- Confidence-based prediction handling
+- Model-only CPU inference benchmarking
+
+### Ongoing Optimization
+
+The following work remains part of the optimization roadmap:
+
+- Model quantization and validation
+- Improved recognition accuracy
+- Robustness testing
+- End-to-end latency measurement
+- Testing on actual edge hardware
+
+ONNX export has been completed. Quantization and validated edge-device deployment are not yet claimed as completed.
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to run EchoGesture locally.
+
+### Prerequisites
+
+Install the following:
+
+- Node.js and npm
+- Python 3.10 or a compatible Python version
+- Git
+- A webcam
+- A modern browser
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/HasiniGali/echo-gesture-web.git
+```
+
+Navigate to the project directory:
+
+```bash
+cd echo-gesture-web
+```
+
+### 2. Start the Frontend
+
+Install frontend dependencies:
+
+```bash
 npm install
-py -m venv backend\.venv
-backend\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
-Copy-Item backend\.env.example backend\.env
 ```
 
-Start the backend in a PowerShell window:
+Create or update the frontend environment file:
 
-```powershell
-Set-Location C:\Users\hasin\echo-gesture-web\backend
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8001
+```text
+.env
 ```
 
-Start the frontend in another PowerShell window:
+Add the backend API URL:
 
-```powershell
-Set-Location C:\Users\hasin\echo-gesture-web
+```env
+VITE_API_URL=https://echo-gesture-web.onrender.com/api
+```
+
+Start the development server:
+
+```bash
 npm run dev
 ```
 
-Open the Vite URL (normally `http://localhost:5173`). FastAPI Swagger documentation is at `http://127.0.0.1:8001/docs`.
+Open the local URL displayed by Vite in your browser.
 
-Checks:
+### 3. Start the Backend
 
-```powershell
-npm run lint
-npm run build
-Set-Location backend
-.\.venv\Scripts\python.exe -m pytest -q
+Open a separate terminal.
+
+Navigate to the backend directory:
+
+```bash
+cd backend
 ```
 
-## Configuration
+Install backend dependencies:
 
-Copy `backend\.env.example` to `backend\.env`; real credentials belong only in the ignored `.env` file. Supported variables:
-
-- `ECHOGESTURE_DATABASE_PATH`: SQLite file path; defaults to `backend/data/echogesture.sqlite3`.
-- `ECHOGESTURE_CORS_ORIGINS`: comma-separated allowed frontend origins.
-- `GOOGLE_TRANSLATE_API_KEY`: optional Google Cloud Translation credential. Requests remain server-side.
-- `ECHOGESTURE_MODEL_PATH`: optional TorchScript model path.
-- `ECHOGESTURE_VOCABULARY_PATH`: optional 77-label JSON mapping.
-- `ECHOGESTURE_PREPROCESSING_VERIFIED`: must remain `false` until browser and training preprocessing are verified to match.
-- `ECHOGESTURE_REJECTION_THRESHOLD`: model confidence rejection threshold, default `0.60`.
-- `ECHOGESTURE_MANIFEST_DIR` and `ECHOGESTURE_FEATURE_DIR`: local paths for dataset validation.
-- `VITE_API_BASE_URL`: optional public API base URL for deployments; development defaults to the Vite `/api` proxy.
-
-The API is a local prototype without user authentication. Do not expose it publicly or put credentials in frontend environment variables.
-
-## API
-
-- `GET /api/health`: API, SQLite, model and translation availability.
-- `GET /api/recognition/status`: actual model readiness and blocker reason.
-- `POST /api/recognition/predict`: validates exactly 60 frames × 258 finite values; returns 503 until model, vocabulary and preprocessing gates pass.
-- `POST /api/translation`: server-side Google translation when configured; returns 503 otherwise.
-- `GET|PUT /api/settings`: settings persistence.
-- `GET|POST /api/history/recognition`: recognition history.
-- `GET|POST /api/history/translations`: successful translation history.
-- `GET|POST /api/history/favorites` and `/api/history/favorites/remove`: emergency phrase favorites.
-- `GET|POST /api/history/emergency-phrases`: emergency phrase recency.
-- `GET|POST /api/history/translation-favorites` and `/remove`: saved translations.
-- `GET /api/learning/lessons`: explicitly reports that verified lesson content is unavailable.
-- `GET|PUT /api/learning/progress`: lesson progress storage.
-
-## Dataset Validation
-
-The supplied `/content/drive/MyDrive/...` locations are Colab paths. Their ZIP archives have been transferred and extracted locally without changing the source archives or split membership:
-
-```text
-backend/data/manifests_77_v1/
-backend/data/full_keypoints/
+```bash
+pip install -r requirements.txt
 ```
 
-The manifest directory must include `training_manifest.csv`, `train.csv`, `validation.csv`, `test.csv`, `sentence_vocabulary.json` and `dataset_config.json`. Then run from the backend directory:
+Start the FastAPI server:
 
-```powershell
-$env:ECHOGESTURE_MANIFEST_DIR = 'C:\Users\hasin\echo-gesture-web\backend\data\manifests_77_v1'
-$env:ECHOGESTURE_FEATURE_DIR = 'C:\Users\hasin\echo-gesture-web\backend\data\full_keypoints'
-.\.venv\Scripts\python.exe -m app.training.verify_dataset --manifest-dir $env:ECHOGESTURE_MANIFEST_DIR --feature-dir $env:ECHOGESTURE_FEATURE_DIR
+```bash
+uvicorn app.main:app --reload
 ```
 
-The read-only validator passes: 239/77/77 rows, 77 mapped classes, 393 referenced feature files with shape `(60, 258)`, finite values, no sample-ID overlap, and matching `training_manifest.csv`. The notebook's full-keypoints writer output reports 492/492 successful arrays into `full_keypoints` with the same numbered filenames and 492 source records recorded by this dataset config. Feature geometry independently matches the original 3D shoulder-centered, shoulder-distance-scaled transform and not the later 2D-width/per-sample-normalized arrays. The transferred split has empty video paths and no signer IDs, so video-by-video provenance and signer leakage remain unverified.
+The backend will start on the local development address configured by Uvicorn.
 
-The stored Cell 57 contract is documented in `backend/app/training/preprocessing_contract.py`: Pose `[x,y,z,visibility]` (33×4), Left Hand `[x,y,z]` (21×3), Right Hand `[x,y,z]` (21×3); per frame subtract the midpoint of shoulder pose landmarks 11 and 12 in xyz, divide xyz coordinates by their 3D Euclidean distance, preserve pose visibility, retain zero missing-hand landmarks, return an all-zero frame if no pose or shoulder scale is below `1e-5`, and pad short clips at the end. The writer samples up to 60 evenly spaced source-frame indices. It runs fresh Pose/Hand Tasks per video with monotonically increasing `frame_number * 1000` timestamps. The later extraction_v2 keypoints and Cell 298 `X_landmarks`/clean_v1 per-sample z-score path are separate artifacts and are not applied to these 393 tensors.
+If your local environment uses a different Python command or virtual environment, activate it before installing dependencies.
 
-A compact temporal CNN baseline is prepared. It consumes stored tensors unchanged, trains only on `train.csv`, selects/early-stops on `validation.csv`, and never loads `test.csv` for training. The audit has verified the stored-data preprocessing contract; the separate inference flag must stay false until webcam landmarks reproduce it. Run the baseline only with the explicit dataset-review confirmation:
+---
 
-```powershell
-$env:ECHOGESTURE_DATASET_PREPROCESSING_VERIFIED = 'true'
-.\.venv\Scripts\python.exe -m app.training.train --manifest-dir $env:ECHOGESTURE_MANIFEST_DIR --feature-dir $env:ECHOGESTURE_FEATURE_DIR --confirm-preprocessing-review
+## 🔌 API Endpoints
+
+The backend provides recognition-related API endpoints.
+
+### Recognition Status
+
+```http
+GET /api/recognition/status
 ```
 
-Do not set `ECHOGESTURE_PREPROCESSING_VERIFIED=true` until the browser pipeline has been implemented and parity-tested. The test split is reserved for one final evaluation after validation-based checkpoint selection. No training has been run and no accuracy is claimed.
+Checks the availability and status of the recognition service.
 
-## Model and Translation Readiness
+### Gesture Prediction
 
-Recognition is not operational. There is no trained model, browser landmark extractor, or confirmed browser/training preprocessing parity. `backend/requirements-ml.txt` contains optional PyTorch/scikit-learn/ONNX tooling; PyTorch installation must use a supported Python/platform wheel. The API only loads a configured 77-output TorchScript model after the preprocessing gate is explicitly verified. Low-confidence outputs are rejected.
+```http
+POST /api/recognition/predict
+```
 
-Translation requires `GOOGLE_TRANSLATE_API_KEY`; it is never fabricated. Camera preview remains local-only. Browser speech recognition, microphone/camera access and speech voices depend on browser support and permissions. Learning entries are demonstrations only; no unverified signs are served as authentic content.
+Accepts a processed landmark sequence and returns the recognition result.
 
-Deployment update
+The response includes prediction information and confidence-based recognition status.
+
+---
+
+## 🌐 Deployment
+
+EchoGesture is deployed using separate frontend and backend services.
+
+| Service | Platform | URL |
+|---|---|---|
+| Frontend | Vercel | https://echo-gesture-web.vercel.app |
+| Backend | Render | https://echo-gesture-web.onrender.com |
+
+The frontend communicates with the backend through the configured API URL.
+
+Camera access requires browser permission and a supported secure context.
+
+---
+
+## 🧪 Testing the Prototype
+
+To test the current application:
+
+1. Open the live demo.
+2. Navigate to the Recognition page.
+3. Allow camera access.
+4. Wait for the landmark models to initialize.
+5. Perform a gesture in front of the camera.
+6. Allow the application to collect the required frames.
+7. Observe the prediction and confidence information.
+8. Check the recognition status and API latency.
+
+A rejected prediction means the model did not produce a result that met the configured confidence requirement.
+
+---
+
+## 🔮 Future Enhancements
+
+The following features are planned for future development.
+
+### 1. Emergency Communication Mode
+
+A dedicated mode for important communication phrases, such as:
+
+- Requesting help
+- Requesting an ambulance
+- Asking for a doctor
+- Reporting an injury
+
+High-priority phrases will require validation to ensure reliable output.
+
+### 2. Regional Language Support
+
+Planned output languages:
+
+- English
+- Hindi
+- Telugu
+- Tamil
+- Kannada
+
+Translation quality and meaning preservation will need to be validated.
+
+### 3. ISL Learning Mode
+
+A learning experience that may include:
+
+- Sign demonstrations
+- Gesture practice
+- Landmark-based feedback
+- Recognition-based learning progress
+
+### 4. Edge Optimization
+
+Future technical improvements include:
+
+- Model quantization
+- Reduced inference overhead
+- Edge-device testing
+- End-to-end latency measurement
+- Improved model accuracy and robustness
+
+These features are planned enhancements and are not represented as fully implemented in the current prototype.
+
+---
+
+## ⚠️ Current Limitations
+
+The current prototype has several limitations:
+
+- Recognition accuracy is still low.
+- Predictions may be rejected because of low confidence.
+- Recognition performance can vary with camera position and lighting.
+- The model has not been validated for all users and environments.
+- Complete edge-device deployment and quantization remain future work.
+- Planned accessibility modes are not yet fully implemented.
+
+The project is currently a prototype and should not be treated as a reliable communication or emergency-response system.
+
+---
+
+## 🎯 Project Objective
+
+EchoGesture aims to combine computer vision, machine learning, and accessible interface design to create a foundation for sign language recognition.
+
+The current implementation demonstrates the complete recognition workflow:
+
+**Camera → Landmarks → Preprocessing → Model → Prediction → User Interface**
+
+The next stage is to improve accuracy, validate robustness, and optimize the system for efficient edge-device operation.
+
+---
+
+## 👥 Team
+
+**Project:** EchoGesture  
+**Track:** Sign Language Prediction on Edge Devices  
+**Repository:** https://github.com/HasiniGali/echo-gesture-web
+
+---
+
+## 📄 License
+
+Add the project's chosen license here before distributing the repository publicly.
