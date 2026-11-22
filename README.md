@@ -113,3 +113,5 @@ Do not set `ECHOGESTURE_PREPROCESSING_VERIFIED=true` until the browser pipeline 
 Recognition is not operational. There is no trained model, browser landmark extractor, or confirmed browser/training preprocessing parity. `backend/requirements-ml.txt` contains optional PyTorch/scikit-learn/ONNX tooling; PyTorch installation must use a supported Python/platform wheel. The API only loads a configured 77-output TorchScript model after the preprocessing gate is explicitly verified. Low-confidence outputs are rejected.
 
 Translation requires `GOOGLE_TRANSLATE_API_KEY`; it is never fabricated. Camera preview remains local-only. Browser speech recognition, microphone/camera access and speech voices depend on browser support and permissions. Learning entries are demonstrations only; no unverified signs are served as authentic content.
+
+Deployment update
